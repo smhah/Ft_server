@@ -1,5 +1,5 @@
-FROM debian:10
-
+FROM debian:buster
+#ENV	DEBIAN_FRONTEND noninteractive
 workdir /tmp
 
 COPY srcs/install-vim.sh .
@@ -7,7 +7,6 @@ COPY srcs/install-mysql.sh .
 COPY srcs/install-php.sh .
 COPY srcs/start-mysql.sh .
 
-EXPOSE 80
 RUN bash -c "apt update && apt-get install -y nginx"
 RUN bash -c "bash install-vim.sh" && \
 	bash -c "bash install-mysql.sh" && \
@@ -37,3 +36,5 @@ COPY srcs/wordpress.sql .
 COPY srcs/config.sh .
 COPY srcs/import-data.sh .
 RUN bash -c "bash import-data.sh"
+CMD bash /tmp/start-all.sh && tail -f /dev/null
+EXPOSE 80 443

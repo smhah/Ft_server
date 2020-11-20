@@ -1,26 +1,31 @@
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    # SSL configuration
-    listen 443 ssl default_server;
-    listen [::]:443 ssl default_server;
+	listen 80 default_server;
     
-    ssl_certificate /root/localhost.crt;
+	server_name _;
+
+	return 301 https://$uri$request_uri;
+}
+
+
+server {
+	listen 443 ssl;
+
+	ssl_certificate /root/localhost.crt;
     ssl_certificate_key /root/localhost.key;
+	
+	root /var/www/html/;
+	index index.php;
 
-    root /var/www/html;
+	server_name localhost;
+	
+	autoindex on;  ######
 
-    index index.html index.htm index.nginx-debian.html index.php;
-    autoindex on;
-    server_name _;
+	location / {
+		try_files $uri $uri/ =404;
+	}
 
-    location / {
-        try_files $uri $uri/ =404;
-    }
-
-    location ~ \.php$ {
-    include snippets/fastcgi-php.conf;
-    fastcgi_pass unix:/run/php/php7.3-fpm.sock;
-    }
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+	}
 }
